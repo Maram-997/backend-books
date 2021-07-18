@@ -20,6 +20,9 @@ server.post('/newBook', addBook)
 
 server.delete('/deleteBook/:idx', deleteBook)
 
+server.put('/updateBook/:idx', updateBook)
+
+
 function addBook(req,res){
     let {email,name,description,status,img} = req.body
     functionHandler.userModel.find({email:email},(error,booksData) => {
@@ -42,8 +45,7 @@ function addBook(req,res){
 
 
 function deleteBook (req,res){
-    console.log(req.params.idx)
-    console.log(req.query)
+
     let idxx = Number(req.params.idx)
     let emailReq = req.query.email;
     functionHandler.userModel.find({email:emailReq},(error,booksData) => { 
@@ -60,19 +62,28 @@ function deleteBook (req,res){
 
             }
 
-
-
-
-
-
-
-
-
-
-
-
     })
 }
+ 
+function updateBook (req,res){
+    const {email,name,description,status,img} = req.body
+    let idxx = Number(req.params.idx)
+ functionHandler.userModel.findOne({email:email},(error,booksData)=>{
+    if(error){res.send(error)}
+else{
+    booksData.books.splice(idxx,1,{
+        name:name,
+        description:description,
+        status:status,
+        img_url:img
+    })
+
+    booksData.save();
+    res.send(booksData.books)
+}
+})
+}
+ 
 server.listen(PORT,() => 
  {   console.log('does it work?')
 })
